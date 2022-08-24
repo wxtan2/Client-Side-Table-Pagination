@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-markup.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/combine/gh/jablonczay/code-box-copy/clipboard/clipboard.min.js,gh/jablonczay/code-box-copy/code-box-copy/js/code-box-copy.min.js"></script>
+    <script src="table-pagination.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism-okaidia.min.css">
+    <link href="https://cdn.jsdelivr.net/gh/jablonczay/code-box-copy/code-box-copy/css/code-box-copy.min.css" rel="stylesheet" />
+
+
+    <title>Dynamic Table</title>
+    <style>
+        /* Animation Styling */
+        
+        @keyframes buttonPop {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        /* Page Styling */
+        
+        body {
+            all: unset;
+            font-family: system-ui;
+            color: #272822;
+            font-size: 100%;
+            line-height: 1.5;
+        }
+        
+        ul {
+            margin: 0 0 0 1.25em;
+            padding: 0;
+            line-height: 1.875;
+        }
+        
+        h1,
+        h2 {
+            margin-top: 0px;
+        }
+        
+        .top-banner {
+            min-height: 40px;
+            min-width: 100%;
+            width: fit-content;
+            background-color: #6f7ad7;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-weight: 500;
+            padding: 10px 0
+        }
+        
+        .bottom-banner {
+            min-height: 40px;
+            min-width: 100%;
+            width: fit-content;
+            background-color: #eeeeee;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-weight: 500;
+            padding: 10px 0
+        }
+        
+        .top-banner-content {
+            display: flex;
+            align-items: center;
+        }
+        
+        .top-banner-content svg {
+            height: 55px;
+            width: auto;
+            margin-right: 20px;
+        }
+        
+        .top-banner .margin-1200 {
+            padding: 0;
+        }
+        
+        .margin-1200 {
+            width: 1200px;
+            margin: auto;
+            padding: 20px 0px;
+        }
+        
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            align-items: flex-start;
+            flex-direction: row
+        }
+        
+        .setting-container {
+            width: 600px;
+        }
+        
+        .button-container {
+            display: flex;
+            align-items: start;
+            flex-direction: column;
+        }
+        
+        .arrow-button {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .code-container {
+            margin-top: 40px;
+        }
+        /* Table Styling */
+        
+        .tableTestClass {
+            border-collapse: collapse;
+            color: #666666;
+        }
+        
+        .tableTestClass tr:nth-child(1) {
+            background-color: #6f7ad7!important;
+            padding: 5px 10px;
+            color: #ffffff;
+        }
+        
+        .tableTestClass tr:nth-child(odd) {
+            background-color: #f4f4f4;
+        }
+        
+        .tableTestClass tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        .tableTestClass td {
+            border: 1px solid #fff;
+            padding: 5px 10px;
+        }
+        
+        #paginateBtn {
+            padding: 10px 20px;
+            background-color: #6f7ad7;
+            color: #fff;
+            outline: none;
+            border: 0px;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: 0.2s;
+            animation: buttonPop 1s infinite;
+        }
+        
+        #paginateBtn:hover {
+            background-color: #6f7ad7e6;
+            transform: scale(1.05);
+            transition: 0.2s;
+        }
+        
+        .setting-content {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .rowPerTableContainer,
+        .paginationActiveColorContainer,
+        .paginationFontColorContainer,
+        .paginationStyleContainer,
+        .jumpPageContainer {
+            display: flex;
+            flex-wrap: wrap;
+            row-gap: 20px;
+            justify-content: left;
+        }
+        
+        label {
+            min-width: 50px;
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 3px solid #cccccc;
+            box-sizing: border-box;
+        }
+        
+        .paginationActiveColorContainer label:nth-of-type(1) {
+            background-color: #6f7ad7;
+        }
+        
+        .paginationActiveColorContainer label:nth-of-type(2) {
+            background-color: #FFA4B6;
+        }
+        
+        .paginationActiveColorContainer label:nth-of-type(3) {
+            background-color: #0B1354;
+        }
+        
+        .paginationFontColorContainer label:nth-of-type(1) {
+            background-color: #555555;
+        }
+        
+        .paginationFontColorContainer label:nth-of-type(2) {
+            background-color: #0B1354;
+        }
+        
+        .paginationFontColorContainer label:nth-of-type(3) {
+            background-color: #000000;
+        }
+        
+        .bottom-banner a {
+            margin: 0 20px;
+            text-decoration: none;
+            color: #6f7ad7;
+            transform: scale(1);
+            transition: 0.3s;
+        }
+        
+        .bottom-banner a:hover {
+            margin: 0 20px;
+            text-decoration: none;
+            color: #535cb1;
+            transform: scale(1.05);
+            transition: 0.3s;
+        }
+        
+        input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+            user-select: none;
+        }
+        
+        input[type="text"] {
+            font-size: 16px;
+            border-radius: 5px;
+            padding: 0 10px;
+            min-height: 40px;
+            width: 40px;
+        }
+        
+        input[type="color"] {
+            border-radius: 5px;
+            height: auto;
+            background: #fff;
+        }
+        
+        input[type="radio"]:checked+label {
+            border: 3px solid #6f7ad7;
+        }
+        
+        .table-container {
+            width: fit-content;
+        }
+        /* Use a media query to add a breakpoint at 800px: */
+        
+        @media screen and (max-width: 1200px) {
+            .margin-1200 {
+                width: calc(100vw - 32px);
+                margin: auto;
+            }
+            .top-banner .margin-1200 {
+                padding: 0;
+            }
+            .main-container {
+                flex-direction: column;
+            }
+            .tableTestClass {
+                width: 100%;
+            }
+            .setting-container {
+                width: 100%;
+                display: block;
+            }
+            .top-banner-content svg {
+                height: 30px;
+            }
+            .arrow-button {
+                display: flex;
+                flex-direction: row-reverse;
+                align-items: flex-end;
+                align-self: center;
+            }
+            .arrow-button svg {
+                transform: rotate(90deg);
+            }
+            .button-container {
+                align-items: center;
+            }
+            .button-container h2 {
+                margin-top: 30px;
+            }
+            .setting-content {
+                align-items: center;
+            }
+            .rowPerTableContainer,
+            .paginationActiveColorContainer,
+            .paginationFontColorContainer,
+            .paginationStyleContainer,
+            .jumpPageContainer {
+                justify-content: center;
+            }
+            .table-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-banner">
+        <div class="margin-1200">
+            <div class="top-banner-content">
+                <svg width="716" height="176" viewBox="0 0 716 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_605_2)">
+                <path d="M10.46 97.4102L1.5 106.53L26.75 134.5L1.5 162.47L10.36 171.6L44.07 134.5L10.46 97.4102Z" fill="white" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M106.02 159.38H42.07V170.6H106.02V159.38Z" fill="white" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M143.37 132.38L146.92 172.82" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M108.25 132.38L128.34 172.82H151.51" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M38.52 107.17C43.35 97.4099 51.85 92.3799 60.99 87.6499" stroke="white" stroke-width="5" stroke-miterlimit="10" stroke-linecap="round"/>
+                <path d="M126.46 73.71C151.82 77.56 174.2 98.35 171.35 107.05C167.93 117.49 155.46 127.96 143.51 132.49" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M95.37 80.3799C52.7 86.8999 9.92002 40.5998 12.7 35.9298C15.81 29.7098 82.48 31.4898 102.92 69.2698" stroke="white" stroke-width="5" stroke-miterlimit="10" stroke-linecap="round"/>
+                <path d="M82.03 45.7301C73.3 18.7301 68.92 8.80011 74.03 2.61011C86.63 0.610109 119.81 25.7901 126.48 73.7101" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M132.04 100.83C135.619 100.83 138.52 97.9289 138.52 94.3501C138.52 90.7713 135.619 87.8701 132.04 87.8701C128.461 87.8701 125.56 90.7713 125.56 94.3501C125.56 97.9289 128.461 100.83 132.04 100.83Z" fill="white" stroke="white" stroke-miterlimit="10"/>
+                <path d="M96.35 24.9302C107.12 36.9302 112.91 48.5702 113.68 58.1002" stroke="white" stroke-width="3" stroke-miterlimit="10"/>
+                <path d="M53.04 45.1401C71.53 48.8201 81.47 57.2901 90.67 66.1401" stroke="white" stroke-width="3" stroke-miterlimit="10"/>
+                <path d="M259.19 161.31C259.19 169.483 255.04 173.57 246.74 173.57H207.82C199.38 173.57 195.163 169.483 195.17 161.31V86.79C195.17 78.6167 199.387 74.5334 207.82 74.54H246.74C255.04 74.54 259.19 78.6234 259.19 86.79V110.33H237.33V93.26H217.23V154.94H237.33V136.01H259.19V161.31Z" fill="white"/>
+                <path d="M337.73 161.31C337.73 169.483 333.58 173.57 325.28 173.57H285.08C276.653 173.57 272.437 169.483 272.43 161.31V86.79C272.43 78.6167 276.647 74.5334 285.08 74.54H325.28C333.58 74.54 337.73 78.6234 337.73 86.79V161.31ZM315.73 154.94V93.26H294.46V154.94H315.73Z" fill="white"/>
+                <path d="M420.88 173.57H398.52V170.14C383.347 172.807 374.85 174.14 373.03 174.14C367.41 174.14 362.997 172.473 359.79 169.14C356.583 165.807 354.983 161.313 354.99 155.66V94.4901C354.99 86.4501 357.863 80.8634 363.61 77.7301C367.797 75.3701 374.13 74.1934 382.61 74.2001C384.5 74.2001 387.25 74.2601 390.84 74.3901C394.43 74.5201 396.99 74.5901 398.49 74.5901V20.1201H420.85L420.88 173.57ZM398.52 154.25V93.2501H384.69C379.73 93.2501 377.247 95.7368 377.24 100.71V148.07C377.24 152.903 379.593 155.32 384.3 155.32C385.413 155.327 390.153 154.97 398.52 154.25Z" fill="white"/>
+                <path d="M509.02 40.4201H483.72V173.57H460.88V40.4201H435.58V20.1201H509.02V40.4201Z" fill="white"/>
+                <path d="M587.46 161.31C587.46 169.483 583.307 173.57 575 173.57H534.8C526.367 173.57 522.15 169.483 522.15 161.31V86.79C522.15 78.6167 526.367 74.5334 534.8 74.54H575C583.3 74.54 587.453 78.6234 587.46 86.79V161.31ZM565.46 154.94V93.26H544.21V154.94H565.46Z" fill="white"/>
+                <path d="M672.95 161.31C672.95 169.483 668.8 173.57 660.5 173.57H620.3C611.867 173.57 607.65 169.483 607.65 161.31V86.79C607.65 78.6167 611.867 74.5334 620.3 74.54H660.46C668.76 74.54 672.91 78.6234 672.91 86.79L672.95 161.31ZM650.95 154.94V93.26H629.71V154.94H650.95Z" fill="white"/>
+                <path d="M715.79 173.57H693.73V20.1201H715.79V173.57Z" fill="white"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_605_2">
+                <rect width="715.8" height="175.32" fill="white"/>
+                </clipPath>
+                </defs>
+                </svg>
+            </div>
+
+        </div>
+    </div>
+    <div class="margin-1200">
+        <h1>Client Side HTML Table Pagination</h1>
+
+
+        <div class="main-container">
+            <div class="table-container">
+                <h2>Try It Yourself</h2>
+
+                <table id="tableTest" class="tableTestClass">
+                    <tbody>
+                        <tr>
+                            <td>Column One Header</td>
+                            <td>Column Two Header</td>
+                            <td>Column Three Header</td>
+                        </tr>
+                        <tr>
+                            <td>Row 1</td>
+                            <td>declared</td>
+                            <td>rise</td>
+                        </tr>
+                        <tr>
+                            <td>Row 2</td>
+                            <td>far</td>
+                            <td>without</td>
+                        </tr>
+                        <tr>
+                            <td>Row 3</td>
+                            <td>either</td>
+                            <td>tide</td>
+                        </tr>
+                        <tr>
+                            <td>Row 4</td>
+                            <td>desert</td>
+                            <td>hay</td>
+                        </tr>
+                        <tr>
+                            <td>Row 5</td>
+                            <td>alike</td>
+                            <td>difficulty</td>
+                        </tr>
+                        <tr>
+                            <td>Row 6</td>
+                            <td>spin</td>
+                            <td>eye</td>
+                        </tr>
+                        <tr>
+                            <td>Row 7</td>
+                            <td>easy</td>
+                            <td>solve</td>
+                        </tr>
+                        <tr>
+                            <td>Row 8</td>
+                            <td>show</td>
+                            <td>perfect</td>
+                        </tr>
+                        <tr>
+                            <td>Row 9</td>
+                            <td>actual</td>
+                            <td>magnet</td>
+                        </tr>
+                        <tr>
+                            <td>Row 10</td>
+                            <td>symbol</td>
+                            <td>spoken</td>
+                        </tr>
+                        <tr>
+                            <td>Row 11</td>
+                            <td>combination</td>
+                            <td>tonight</td>
+                        </tr>
+                        <tr>
+                            <td>Row 12</td>
+                            <td>six</td>
+                            <td>palace</td>
+                        </tr>
+                        <tr>
+                            <td>Row 13</td>
+                            <td>opportunity</td>
+                            <td>hidden</td>
+                        </tr>
+                        <tr>
+                            <td>Row 14</td>
+                            <td>person</td>
+                            <td>exact</td>
+                        </tr>
+                        <tr>
+                            <td>Row 15</td>
+                            <td>nearly</td>
+                            <td>your</td>
+                        </tr>
+                        <tr>
+                            <td>Row 16</td>
+                            <td>species</td>
+                            <td>possibly</td>
+                        </tr>
+                        <tr>
+                            <td>Row 17</td>
+                            <td>bridge</td>
+                            <td>consonant</td>
+                        </tr>
+                        <tr>
+                            <td>Row 18</td>
+                            <td>train</td>
+                            <td>bar</td>
+                        </tr>
+                        <tr>
+                            <td>Row 19</td>
+                            <td>clothing</td>
+                            <td>settlers</td>
+                        </tr>
+                        <tr>
+                            <td>Row 20</td>
+                            <td>job</td>
+                            <td>excitement</td>
+                        </tr>
+                        <tr>
+                            <td>Row 21</td>
+                            <td>pour</td>
+                            <td>struggle</td>
+                        </tr>
+                        <tr>
+                            <td>Row 22</td>
+                            <td>sets</td>
+                            <td>citizen</td>
+                        </tr>
+                        <tr>
+                            <td>Row 23</td>
+                            <td>waste</td>
+                            <td>golden</td>
+                        </tr>
+                        <tr>
+                            <td>Row 24</td>
+                            <td>effort</td>
+                            <td>solution</td>
+                        </tr>
+                        <tr>
+                            <td>Row 25</td>
+                            <td>establish</td>
+                            <td>blind</td>
+                        </tr>
+                        <tr>
+                            <td>Row 26</td>
+                            <td>age</td>
+                            <td>feature</td>
+                        </tr>
+                        <tr>
+                            <td>Row 27</td>
+                            <td>clock</td>
+                            <td>industry</td>
+                        </tr>
+                        <tr>
+                            <td>Row 28</td>
+                            <td>dust</td>
+                            <td>none</td>
+                        </tr>
+                        <tr>
+                            <td>Row 29</td>
+                            <td>courage</td>
+                            <td>ear</td>
+                        </tr>
+                        <tr>
+                            <td>Row 30</td>
+                            <td>camp</td>
+                            <td>curve</td>
+                        </tr>
+                        <tr>
+                            <td>Row 31</td>
+                            <td>wrote</td>
+                            <td>everything</td>
+                        </tr>
+                        <tr>
+                            <td>Row 32</td>
+                            <td>period</td>
+                            <td>satellites</td>
+                        </tr>
+                        <tr>
+                            <td>Row 33</td>
+                            <td>whenever</td>
+                            <td>former</td>
+                        </tr>
+                        <tr>
+                            <td>Row 34</td>
+                            <td>caught</td>
+                            <td>saddle</td>
+                        </tr>
+                        <tr>
+                            <td>Row 35</td>
+                            <td>rock</td>
+                            <td>collect</td>
+                        </tr>
+                        <tr>
+                            <td>Row 36</td>
+                            <td>cave</td>
+                            <td>disease</td>
+                        </tr>
+                        <tr>
+                            <td>Row 37</td>
+                            <td>official</td>
+                            <td>orange</td>
+                        </tr>
+                        <tr>
+                            <td>Row 38</td>
+                            <td>beneath</td>
+                            <td>breathing</td>
+                        </tr>
+                        <tr>
+                            <td>Row 39</td>
+                            <td>easy</td>
+                            <td>clearly</td>
+                        </tr>
+                        <tr>
+                            <td>Row 40</td>
+                            <td>promised</td>
+                            <td>shelf</td>
+                        </tr>
+                        <tr>
+                            <td>Row 41</td>
+                            <td>further</td>
+                            <td>negative</td>
+                        </tr>
+                        <tr>
+                            <td>Row 42</td>
+                            <td>fed</td>
+                            <td>put</td>
+                        </tr>
+                        <tr>
+                            <td>Row 43</td>
+                            <td>wheel</td>
+                            <td>attached</td>
+                        </tr>
+                        <tr>
+                            <td>Row 44</td>
+                            <td>handle</td>
+                            <td>near</td>
+                        </tr>
+                        <tr>
+                            <td>Row 45</td>
+                            <td>said</td>
+                            <td>mysterious</td>
+                        </tr>
+                        <tr>
+                            <td>Row 46</td>
+                            <td>divide</td>
+                            <td>police</td>
+                        </tr>
+                        <tr>
+                            <td>Row 47</td>
+                            <td>bend</td>
+                            <td>pictured</td>
+                        </tr>
+                        <tr>
+                            <td>Row 48</td>
+                            <td>one</td>
+                            <td>please</td>
+                        </tr>
+                        <tr>
+                            <td>Row 49</td>
+                            <td>helpful</td>
+                            <td>public</td>
+                        </tr>
+                        <tr>
+                            <td>Row 50</td>
+                            <td>bottle</td>
+                            <td>bent</td>
+                        </tr>
+                        <tr>
+                            <td>Row 51</td>
+                            <td>correct</td>
+                            <td>deep</td>
+                        </tr>
+                        <tr>
+                            <td>Row 52</td>
+                            <td>declared</td>
+                            <td>rise</td>
+                        </tr>
+                        <tr>
+                            <td>Row 53</td>
+                            <td>far</td>
+                            <td>without</td>
+                        </tr>
+                        <tr>
+                            <td>Row 54</td>
+                            <td>either</td>
+                            <td>tide</td>
+                        </tr>
+                        <tr>
+                            <td>Row 55</td>
+                            <td>desert</td>
+                            <td>hay</td>
+                        </tr>
+                        <tr>
+                            <td>Row 56</td>
+                            <td>alike</td>
+                            <td>difficulty</td>
+                        </tr>
+                        <tr>
+                            <td>Row 57</td>
+                            <td>spin</td>
+                            <td>eye</td>
+                        </tr>
+                        <tr>
+                            <td>Row 58</td>
+                            <td>easy</td>
+                            <td>solve</td>
+                        </tr>
+                        <tr>
+                            <td>Row 59</td>
+                            <td>show</td>
+                            <td>perfect</td>
+                        </tr>
+                        <tr>
+                            <td>Row 60</td>
+                            <td>actual</td>
+                            <td>magnet</td>
+                        </tr>
+                        <tr>
+                            <td>Row 61</td>
+                            <td>symbol</td>
+                            <td>spoken</td>
+                        </tr>
+                        <tr>
+                            <td>Row 62</td>
+                            <td>combination</td>
+                            <td>tonight</td>
+                        </tr>
+                        <tr>
+                            <td>Row 63</td>
+                            <td>six</td>
+                            <td>palace</td>
+                        </tr>
+                        <tr>
+                            <td>Row 64</td>
+                            <td>opportunity</td>
+                            <td>hidden</td>
+                        </tr>
+                        <tr>
+                            <td>Row 65</td>
+                            <td>person</td>
+                            <td>exact</td>
+                        </tr>
+                        <tr>
+                            <td>Row 66</td>
+                            <td>nearly</td>
+                            <td>your</td>
+                        </tr>
+                        <tr>
+                            <td>Row 67</td>
+                            <td>species</td>
+                            <td>possibly</td>
+                        </tr>
+                        <tr>
+                            <td>Row 68</td>
+                            <td>bridge</td>
+                            <td>consonant</td>
+                        </tr>
+                        <tr>
+                            <td>Row 69</td>
+                            <td>train</td>
+                            <td>bar</td>
+                        </tr>
+                        <tr>
+                            <td>Row 70</td>
+                            <td>clothing</td>
+                            <td>settlers</td>
+                        </tr>
+                        <tr>
+                            <td>Row 71</td>
+                            <td>job</td>
+                            <td>excitement</td>
+                        </tr>
+                        <tr>
+                            <td>Row 72</td>
+                            <td>pour</td>
+                            <td>struggle</td>
+                        </tr>
+                        <tr>
+                            <td>Row 73</td>
+                            <td>sets</td>
+                            <td>citizen</td>
+                        </tr>
+                        <tr>
+                            <td>Row 74</td>
+                            <td>waste</td>
+                            <td>golden</td>
+                        </tr>
+                        <tr>
+                            <td>Row 75</td>
+                            <td>effort</td>
+                            <td>solution</td>
+                        </tr>
+                        <tr>
+                            <td>Row 76</td>
+                            <td>establish</td>
+                            <td>blind</td>
+                        </tr>
+                        <tr>
+                            <td>Row 77</td>
+                            <td>age</td>
+                            <td>feature</td>
+                        </tr>
+                        <tr>
+                            <td>Row 78</td>
+                            <td>clock</td>
+                            <td>industry</td>
+                        </tr>
+                        <tr>
+                            <td>Row 79</td>
+                            <td>dust</td>
+                            <td>none</td>
+                        </tr>
+                        <tr>
+                            <td>Row 80</td>
+                            <td>courage</td>
+                            <td>ear</td>
+                        </tr>
+                        <tr>
+                            <td>Row 81</td>
+                            <td>camp</td>
+                            <td>curve</td>
+                        </tr>
+                        <tr>
+                            <td>Row 82</td>
+                            <td>wrote</td>
+                            <td>everything</td>
+                        </tr>
+                        <tr>
+                            <td>Row 83</td>
+                            <td>period</td>
+                            <td>satellites</td>
+                        </tr>
+                        <tr>
+                            <td>Row 84</td>
+                            <td>whenever</td>
+                            <td>former</td>
+                        </tr>
+                        <tr>
+                            <td>Row 85</td>
+                            <td>caught</td>
+                            <td>saddle</td>
+                        </tr>
+                        <tr>
+                            <td>Row 86</td>
+                            <td>rock</td>
+                            <td>collect</td>
+                        </tr>
+                        <tr>
+                            <td>Row 87</td>
+                            <td>cave</td>
+                            <td>disease</td>
+                        </tr>
+                        <tr>
+                            <td>Row 88</td>
+                            <td>official</td>
+                            <td>orange</td>
+                        </tr>
+                        <tr>
+                            <td>Row 89</td>
+                            <td>beneath</td>
+                            <td>breathing</td>
+                        </tr>
+                        <tr>
+                            <td>Row 90</td>
+                            <td>easy</td>
+                            <td>clearly</td>
+                        </tr>
+                        <tr>
+                            <td>Row 91</td>
+                            <td>promised</td>
+                            <td>shelf</td>
+                        </tr>
+                        <tr>
+                            <td>Row 92</td>
+                            <td>further</td>
+                            <td>negative</td>
+                        </tr>
+                        <tr>
+                            <td>Row 93</td>
+                            <td>fed</td>
+                            <td>put</td>
+                        </tr>
+                        <tr>
+                            <td>Row 94</td>
+                            <td>wheel</td>
+                            <td>attached</td>
+                        </tr>
+                        <tr>
+                            <td>Row 95</td>
+                            <td>handle</td>
+                            <td>near</td>
+                        </tr>
+                        <tr>
+                            <td>Row 96</td>
+                            <td>said</td>
+                            <td>mysterious</td>
+                        </tr>
+                        <tr>
+                            <td>Row 97</td>
+                            <td>divide</td>
+                            <td>police</td>
+                        </tr>
+                        <tr>
+                            <td>Row 98</td>
+                            <td>bend</td>
+                            <td>pictured</td>
+                        </tr>
+                        <tr>
+                            <td>Row 99</td>
+                            <td>one</td>
+                            <td>please</td>
+                        </tr>
+                        <tr>
+                            <td>Row 100</td>
+                            <td>helpful</td>
+                            <td>public</td>
+                        </tr>
+                        <tr>
+                            <td>Row 101</td>
+                            <td>bottle</td>
+                            <td>bent</td>
+                        </tr>
+                        <tr>
+                            <td>Row 102</td>
+                            <td>correct</td>
+                            <td>deep</td>
+                        </tr>
+                        <tr>
+                            <td>Row 103</td>
+                            <td>declared</td>
+                            <td>rise</td>
+                        </tr>
+                        <tr>
+                            <td>Row 104</td>
+                            <td>far</td>
+                            <td>without</td>
+                        </tr>
+                        <tr>
+                            <td>Row 105</td>
+                            <td>either</td>
+                            <td>tide</td>
+                        </tr>
+                        <tr>
+                            <td>Row 106</td>
+                            <td>desert</td>
+                            <td>hay</td>
+                        </tr>
+                        <tr>
+                            <td>Row 107</td>
+                            <td>alike</td>
+                            <td>difficulty</td>
+                        </tr>
+                        <tr>
+                            <td>Row 108</td>
+                            <td>spin</td>
+                            <td>eye</td>
+                        </tr>
+                        <tr>
+                            <td>Row 109</td>
+                            <td>easy</td>
+                            <td>solve</td>
+                        </tr>
+                        <tr>
+                            <td>Row 110</td>
+                            <td>show</td>
+                            <td>perfect</td>
+                        </tr>
+                        <tr>
+                            <td>Row 111</td>
+                            <td>actual</td>
+                            <td>magnet</td>
+                        </tr>
+                        <tr>
+                            <td>Row 112</td>
+                            <td>symbol</td>
+                            <td>spoken</td>
+                        </tr>
+                        <tr>
+                            <td>Row 113</td>
+                            <td>combination</td>
+                            <td>tonight</td>
+                        </tr>
+                        <tr>
+                            <td>Row 114</td>
+                            <td>six</td>
+                            <td>palace</td>
+                        </tr>
+                        <tr>
+                            <td>Row 115</td>
+                            <td>opportunity</td>
+                            <td>hidden</td>
+                        </tr>
+                        <tr>
+                            <td>Row 116</td>
+                            <td>person</td>
+                            <td>exact</td>
+                        </tr>
+                        <tr>
+                            <td>Row 117</td>
+                            <td>nearly</td>
+                            <td>your</td>
+                        </tr>
+                        <tr>
+                            <td>Row 118</td>
+                            <td>species</td>
+                            <td>possibly</td>
+                        </tr>
+                        <tr>
+                            <td>Row 119</td>
+                            <td>bridge</td>
+                            <td>consonant</td>
+                        </tr>
+                        <tr>
+                            <td>Row 120</td>
+                            <td>train</td>
+                            <td>bar</td>
+                        </tr>
+                        <tr>
+                            <td>Row 121</td>
+                            <td>clothing</td>
+                            <td>settlers</td>
+                        </tr>
+                        <tr>
+                            <td>Row 122</td>
+                            <td>job</td>
+                            <td>excitement</td>
+                        </tr>
+                        <tr>
+                            <td>Row 123</td>
+                            <td>pour</td>
+                            <td>struggle</td>
+                        </tr>
+                        <tr>
+                            <td>Row 124</td>
+                            <td>sets</td>
+                            <td>citizen</td>
+                        </tr>
+                        <tr>
+                            <td>Row 125</td>
+                            <td>waste</td>
+                            <td>golden</td>
+                        </tr>
+                        <tr>
+                            <td>Row 126</td>
+                            <td>effort</td>
+                            <td>solution</td>
+                        </tr>
+                        <tr>
+                            <td>Row 127</td>
+                            <td>establish</td>
+                            <td>blind</td>
+                        </tr>
+                        <tr>
+                            <td>Row 128</td>
+                            <td>age</td>
+                            <td>feature</td>
+                        </tr>
+                        <tr>
+                            <td>Row 129</td>
+                            <td>clock</td>
+                            <td>industry</td>
+                        </tr>
+                        <tr>
+                            <td>Row 130</td>
+                            <td>dust</td>
+                            <td>none</td>
+                        </tr>
+                        <tr>
+                            <td>Row 131</td>
+                            <td>courage</td>
+                            <td>ear</td>
+                        </tr>
+                        <tr>
+                            <td>Row 132</td>
+                            <td>camp</td>
+                            <td>curve</td>
+                        </tr>
+                        <tr>
+                            <td>Row 133</td>
+                            <td>wrote</td>
+                            <td>everything</td>
+                        </tr>
+                        <tr>
+                            <td>Row 134</td>
+                            <td>period</td>
+                            <td>satellites</td>
+                        </tr>
+                        <tr>
+                            <td>Row 135</td>
+                            <td>whenever</td>
+                            <td>former</td>
+                        </tr>
+                        <tr>
+                            <td>Row 136</td>
+                            <td>caught</td>
+                            <td>saddle</td>
+                        </tr>
+                        <tr>
+                            <td>Row 137</td>
+                            <td>rock</td>
+                            <td>collect</td>
+                        </tr>
+                        <tr>
+                            <td>Row 138</td>
+                            <td>cave</td>
+                            <td>disease</td>
+                        </tr>
+                        <tr>
+                            <td>Row 139</td>
+                            <td>official</td>
+                            <td>orange</td>
+                        </tr>
+                        <tr>
+                            <td>Row 140</td>
+                            <td>beneath</td>
+                            <td>breathing</td>
+                        </tr>
+                        <tr>
+                            <td>Row 141</td>
+                            <td>easy</td>
+                            <td>clearly</td>
+                        </tr>
+                        <tr>
+                            <td>Row 142</td>
+                            <td>promised</td>
+                            <td>shelf</td>
+                        </tr>
+                        <tr>
+                            <td>Row 143</td>
+                            <td>further</td>
+                            <td>negative</td>
+                        </tr>
+                        <tr>
+                            <td>Row 144</td>
+                            <td>fed</td>
+                            <td>put</td>
+                        </tr>
+                        <tr>
+                            <td>Row 145</td>
+                            <td>wheel</td>
+                            <td>attached</td>
+                        </tr>
+                        <tr>
+                            <td>Row 146</td>
+                            <td>handle</td>
+                            <td>near</td>
+                        </tr>
+                        <tr>
+                            <td>Row 147</td>
+                            <td>said</td>
+                            <td>mysterious</td>
+                        </tr>
+                        <tr>
+                            <td>Row 148</td>
+                            <td>divide</td>
+                            <td>police</td>
+                        </tr>
+                        <tr>
+                            <td>Row 149</td>
+                            <td>bend</td>
+                            <td>pictured</td>
+                        </tr>
+                        <tr>
+                            <td>Row 150</td>
+                            <td>one</td>
+                            <td>please</td>
+                        </tr>
+                        <tr>
+                            <td>Row 151</td>
+                            <td>helpful</td>
+                            <td>public</td>
+                        </tr>
+                        <tr>
+                            <td>Row 152</td>
+                            <td>bottle</td>
+                            <td>bent</td>
+                        </tr>
+                        <tr>
+                            <td>Row 153</td>
+                            <td>correct</td>
+                            <td>deep</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="setting-container">
+                <div class="button-container">
+                    <div>
+                        <h2>Tired of Scrolling?</h2>
+                    </div>
+                    <div class="arrow-button">
+
+                        <button id="paginateBtn">
+                                Paginate This Table !
+                            </button>
+
+                    </div>
+
+
+                </div>
+                <div class="setting-content">
+                    <h2>
+                        Table Row Per Page
+                    </h2>
+                    <div class="rowPerTableContainer">
+                        <input type="radio" id="rowPerTable_10" name="rowPerTable" value="10">
+                        <label for="rowPerTable_10">10</label>
+                        <br>
+                        <input type="radio" id="rowPerTable_15" name="rowPerTable" value="15">
+                        <label for="rowPerTable_15">15</label>
+                        <br>
+                        <input type="radio" id="rowPerTable_20" name="rowPerTable" value="20">
+                        <label for="rowPerTable_20">20</label>
+                        <br>
+                        <input type="radio" id="rowPerTable_custom" name="rowPerTable" value="" rel="custom">
+                        <label for="rowPerTable_custom">Custom Value</label><br>
+                        <input id="rowPerTable_custom_value" type="text">
+                    </div>
+
+                </div>
+                <div class="setting-content">
+                    <h2>
+                        Pagination Color
+                    </h2>
+                    <div class="paginationActiveColorContainer">
+                        <input type="radio" id="paginationActiveColor_#6f7ad7" name="paginationActiveColor" value="#6f7ad7">
+                        <label for="paginationActiveColor_#6f7ad7"></label>
+                        <br>
+                        <input type="radio" id="paginationActiveColor_#FFA4B6" name="paginationActiveColor" value="#FFA4B6">
+                        <label for="paginationActiveColor_#FFA4B6"></label>
+                        <br>
+                        <input type="radio" id="paginationActiveColor_#0B1354" name="paginationActiveColor" value="#0B1354">
+                        <label for="paginationActiveColor_#0B1354"></label>
+                        <br>
+                        <input type="radio" id="paginationActiveColor_custom" name="paginationActiveColor" value="" rel="custom">
+                        <label for="paginationActiveColor_custom">Custom Color</label><br>
+                        <input id="paginationActiveColor_custom_value" type="color">
+                    </div>
+                </div>
+                <div class="setting-content">
+                    <h2>
+                        Pagination Font Color
+                    </h2>
+                    <div class="paginationFontColorContainer">
+                        <input type="radio" id="paginationFontColor_#555555" name="paginationFontColor" value="#555555">
+                        <label for="paginationFontColor_#555555"></label>
+                        <br>
+                        <input type="radio" id="paginationFontColor_#0B1354" name="paginationFontColor" value="#0B1354">
+                        <label for="paginationFontColor_#0B1354"></label>
+                        <br>
+                        <input type="radio" id="paginationFontColor_#000000" name="paginationFontColor" value="#000000">
+                        <label for="paginationFontColor_#000000"></label>
+                        <br>
+                        <input type="radio" id="paginationFontColor_custom" name="paginationFontColor" value="" rel="custom">
+                        <label for="paginationFontColor_custom">Custom Color</label><br>
+                        <input id="paginationFontColor_custom_value" type="color">
+                    </div>
+                </div>
+                <div class="setting-content">
+                    <h2>
+                        Pagination Style
+                    </h2>
+                    <div class="paginationStyleContainer">
+                        <input type="radio" id="paginationStyle_borderless" name="paginationStyle" value="borderless">
+                        <label for="paginationStyle_borderless">Borderless</label>
+                        <br>
+                        <input type="radio" id="paginationStyle_bordered" name="paginationStyle" value="bordered">
+                        <label for="paginationStyle_bordered">Bordered</label>
+                    </div>
+                </div>
+                <div class="setting-content">
+                    <h2>
+                        Jump Page
+                    </h2>
+                    <div class="jumpPageContainer">
+                        <input type="radio" id="jumpPage_true" name="jumpPage" value="true">
+                        <label for="jumpPage_true">Enable</label>
+                        <br>
+                        <input type="radio" id="jumpPage_false" name="jumpPage" value="false">
+                        <label for="jumpPage_false">Disable</label>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+
+        <div class="code-container">
+            <h2>How to Use It?</h2>
+            <p>Add JQuery and table pagination into your project</p>
+            <p>You can download the JS file
+                <a href="http://">here</a>
+            </p>
+
+            <div class="code-box-copy">
+
+                <button class="code-box-copy__btn" data-clipboard-target="#js-code" title="Copy"></button>
+                <pre id="js-code" class="language-markup"><code>&lt;head&gt;
+    &lt;script src="js/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;script src="table-pagination.js"&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre></div>
+            <p>or load the required scripts via CDN:</p>
+            <div class="code-box-copy">
+
+                <button class="code-box-copy__btn" data-clipboard-target="#js-code" title="Copy"></button>
+                <pre id="js-code" class="language-markup"><code>&lt;head&gt;
+    &lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;script src="table-pagination.js"&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre></div>
+            <br>
+            <h2>Example Usage</h2>
+            Add an id to the table you wish to paginate:
+            <div class="code-box-copy">
+
+                <button class="code-box-copy__btn" data-clipboard-target="#js-code" title="Copy"></button>
+                <pre id="html-code" class="language-markup"><code>&lt;table id="tableTest"&gt;
+    &lt;!-- Your Table Content Here --&gt;
+&lt;/table&gt;</code></pre></div>
+            <br>
+            <h2>Plugin Initialization</h2>
+            <p>Add the following to the page head or at the end of the body section of your page:</p>
+
+            <div class="code-box-copy">
+                <button class="code-box-copy__btn" data-clipboard-target="#code-demo" title="Copy"></button>
+
+                <pre class="language-markup"><code>&lt;script&gt;
+    $('#tableTest').createTablePagination();
+&lt;/script&gt;</code></pre>
+            </div>
+
+            <p>You may also add optional parameters:</p>
+
+            <div class="code-box-copy">
+                <button class="code-box-copy__btn" data-clipboard-target="#code-demo" title="Copy"></button>
+
+                <pre id="code-demo" class="language-markup"><code>&lt;script&gt;
+    $('#tableTest').createTablePagination({
+        rowPerPage: 10,
+        paginationColor: '#6f7ad7',
+        fontColor:  '#555555',
+        paginationStyle: 'borderless',
+        jumpPage: false,
+    });
+&lt;/script&gt;</code></pre>
+            </div><br>
+            <h2>Parameter</h2>
+            <ul>
+                <li><b>rowPerPage</b> {number} | Default value: 10. - the number of row to display in each page of table</li>
+                <li><b>paginationColor</b> {string} | Default value: '#6f7ad7'. - the display color of paigination active</li>
+                <li><b>fontColor</b> {string} | Default value: '#555555'. - the display color of paigination font and border</li>
+                <li><b>paginationStyle</b> {string} | Default value: 'borderless'. - set to 'bordered' to add the border styling to the pagination</li>
+                <li><b>transitionDuration</b> {number} | Default value: 200. - the fade in time (in milliseconds) when next page appear</li>
+                <li><b>jumpPage</b> {boolean} | Default value: false. - set to true to enable the jump page function</li>
+
+            </ul>
+        </div>
+
+    </div>
+    <div class="bottom-banner"><a href="">Website</a><a href="">GitHub</a><a href="">CodePen</a></div>
+</body>
+<script>
+    var $rowPerTable = 15;
+    var $paginationActiveColor = '#6f7ad7';
+    var $paginationFontColor = '#555555';
+    var $paginationStyle = 'borderless';
+    var $jumpPage = false;
+
+    $("#paginateBtn").on('click', function() {
+        $("#tableTest").createTablePagination();
+        $('input[name="rowPerTable"]:eq(0)').prop('checked', true);
+        $('input[name="paginationActiveColor"]:eq(0)').prop('checked', true);
+        $('input[name="paginationFontColor"]:eq(0)').prop('checked', true);
+        $('input[name="paginationStyle"]:eq(0)').prop('checked', true);
+        $('input[name="jumpPage"]:eq(1)').prop('checked', true);
+    });
+
+    function setPaginatation() {
+        $rowPerTable = parseInt($('input[name="rowPerTable"]:checked').val());
+        $paginationActiveColor = $('input[name="paginationActiveColor"]:checked').val();
+        $paginationFontColor = $('input[name="paginationFontColor"]:checked').val();
+        $paginationStyle = $('input[name="paginationStyle"]:checked').val();
+        $jumpPage = $('input[name="jumpPage"]:checked').val().toLowerCase() === 'true';
+        $('#code-demo code').text("<script>\n\
+    $('#tableTest').createTablePagination({\n\
+        rowPerPage: " + $rowPerTable + ",\n\
+        paginationColor: '" + $paginationActiveColor + "',\n\
+        fontColor: '" + $paginationFontColor + "',\n\
+        paginationStyle: '" + $paginationStyle + "',\n\
+        jumpPage: '" + $jumpPage + "'\n\
+    });\n\
+<\/script>");
+        Prism.highlightAll(false);
+
+        $("#tableTest").createTablePagination({
+            rowPerPage: $rowPerTable,
+            paginationColor: $paginationActiveColor,
+            fontColor: $paginationFontColor,
+            paginationStyle: $paginationStyle,
+            jumpPage: $jumpPage
+        });
+
+    }
+
+    $("#rowPerTable_custom_value").hide();
+    $("#paginationActiveColor_custom_value").hide();
+    $("#paginationFontColor_custom_value").hide();
+
+
+
+    $('input[name="rowPerTable"]').change(function() {
+        if ($(this).attr("rel") == "custom") {
+            $("#rowPerTable_custom_value").show();
+        } else {
+            $("#rowPerTable_custom_value").hide();
+            setPaginatation();
+        }
+    });
+
+    $("#rowPerTable_custom_value").change(function() {
+        $("input[name='rowPerTable']:eq(3)").val($(this).val());
+        setPaginatation();
+    });
+
+    $('input[name="paginationActiveColor"]').change(function() {
+        if ($(this).attr("rel") == "custom") {
+            $("#paginationActiveColor_custom_value").show();
+            $(this).val($("#paginationActiveColor_custom_value").val());
+        } else {
+            $("#paginationActiveColor_custom_value").hide();
+        }
+        setPaginatation();
+    });
+
+    $("#paginationActiveColor_custom_value").change(function() {
+        $("input[name='paginationActiveColor']:eq(3)").val($(this).val());
+        setPaginatation();
+    });
+
+    $('input[name="paginationFontColor"]').change(function() {
+        if ($(this).attr("rel") == "custom") {
+            $("#paginationFontColor_custom_value").show();
+            $(this).val($("#paginationFontColor_custom_value").val());
+        } else {
+            $("#paginationFontColor_custom_value").hide();
+        }
+        setPaginatation();
+    });
+
+    $("#paginationFontColor_custom_value").change(function() {
+        $("input[name='paginationFontColor']:eq(3)").val($(this).val());
+        setPaginatation();
+    });
+
+    $('input[name="paginationStyle"]').change(function() {
+        setPaginatation();
+    });
+
+    $('input[name="jumpPage"]').change(function() {
+        setPaginatation();
+    });
+
+
+    $('.code-box-copy').codeBoxCopy({
+        tooltipText: 'Copied',
+        tooltipShowTime: 1000,
+        tooltipFadeInTime: 300,
+        tooltipFadeOutTime: 300
+    });
+
+    (function() {
+
+        document.addEventListener('DOMContentLoaded', function(event) {
+
+            if (window.Prism) {
+                Prism.highlightAll(false);
+            }
+
+        });
+    })();
+</script>
+
+</html>
