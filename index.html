@@ -1264,8 +1264,8 @@
             <p>or load the required scripts via CDN:</p>
             <div class="code-box-copy">
 
-                <button class="code-box-copy__btn" data-clipboard-target="#js-code" title="Copy"></button>
-                <pre id="js-code" class="language-markup"><code>&lt;head&gt;
+                <button class="code-box-copy__btn" data-clipboard-target="#js-code-cdn" title="Copy"></button>
+                <pre id="js-code-cdn" class="language-markup"><code>&lt;head&gt;
     &lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"&gt;&lt;/script&gt;
     &lt;script src="https://cdn.jsdelivr.net/gh/wxtan2/Client-Side-Table-Pagination/table-pagination.js"&gt;&lt;/script&gt;
 &lt;/head&gt;</code></pre></div>
@@ -1274,7 +1274,7 @@
             Add an id to the table you wish to paginate:
             <div class="code-box-copy">
 
-                <button class="code-box-copy__btn" data-clipboard-target="#js-code" title="Copy"></button>
+                <button class="code-box-copy__btn" data-clipboard-target="#html-code" title="Copy"></button>
                 <pre id="html-code" class="language-markup"><code>&lt;table id="tableTest"&gt;
     &lt;!-- Your Table Content Here --&gt;
 &lt;/table&gt;</code></pre></div>
@@ -1283,9 +1283,9 @@
             <p>Add the following to the page head or at the end of the body section of your page:</p>
 
             <div class="code-box-copy">
-                <button class="code-box-copy__btn" data-clipboard-target="#code-demo" title="Copy"></button>
+                <button class="code-box-copy__btn" data-clipboard-target="#code-demo-no-parameter" title="Copy"></button>
 
-                <pre class="language-markup"><code>&lt;script&gt;
+                <pre id="code-demo-no-parameter" class="language-markup"><code>&lt;script&gt;
     $('#tableTest').createTablePagination();
 &lt;/script&gt;</code></pre>
             </div>
@@ -1293,9 +1293,9 @@
             <p>You may also add optional parameters:</p>
 
             <div class="code-box-copy">
-                <button class="code-box-copy__btn" data-clipboard-target="#code-demo" title="Copy"></button>
+                <button class="code-box-copy__btn" data-clipboard-target="#code-demo-parameter" title="Copy"></button>
 
-                <pre id="code-demo" class="language-markup"><code>&lt;script&gt;
+                <pre id="code-demo-parameter" class="language-markup"><code>&lt;script&gt;
     $('#tableTest').createTablePagination({
         rowPerPage: 10,
         paginationColor: '#6f7ad7',
@@ -1348,7 +1348,7 @@
         paginationColor: '" + $paginationActiveColor + "',\n\
         fontColor: '" + $paginationFontColor + "',\n\
         paginationStyle: '" + $paginationStyle + "',\n\
-        jumpPage: '" + $jumpPage + "'\n\
+        jumpPage: " + $jumpPage + "\n\
     });\n\
 <\/script>");
         Prism.highlightAll(false);
