@@ -1342,7 +1342,7 @@
         $paginationFontColor = $('input[name="paginationFontColor"]:checked').val();
         $paginationStyle = $('input[name="paginationStyle"]:checked').val();
         $jumpPage = $('input[name="jumpPage"]:checked').val().toLowerCase() === 'true';
-        $('#code-demo code').text("<script>\n\
+        $('#code-demo-parameter code').text("<script>\n\
     $('#tableTest').createTablePagination({\n\
         rowPerPage: " + $rowPerTable + ",\n\
         paginationColor: '" + $paginationActiveColor + "',\n\
